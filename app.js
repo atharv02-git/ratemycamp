@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const Joi = require('joi')
 const { campgroundSchema, reviewSchema } = require('./ErrorSchemas')
+const session = require('express-session')
+const flash = require('connect-flash')
+
 const ExpressError = require('./utils/ExpressError')
 const CatchAsync = require('./utils/CatchAsync')
 
@@ -35,6 +38,24 @@ app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
 
+const sessionConfig = {
+    secret: 'thisshouldbeabettersecret!',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
+    }
+}
+app.use(session(sessionConfig))
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 app.use('/campgrounds', campgroundRoutes)
 app.use('/campgrounds/:id/reviews', reviewRoutes)

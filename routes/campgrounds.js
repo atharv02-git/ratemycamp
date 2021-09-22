@@ -31,6 +31,7 @@ router.post('/', validateCampground, CatchAsync(async(req, res, next) => {
     // if (!req.body.campground) throw new ExpressError('Invalid campground data', 400);
     const campground = new Campground(req.body.campground)
     await campground.save();
+    req.flash('success', 'Successfully created a new campground!')
     res.redirect(`/campgrounds/${campground._id}`)
 }))
 
@@ -38,18 +39,27 @@ router.post('/', validateCampground, CatchAsync(async(req, res, next) => {
 router.get('/:id', CatchAsync(async(req, res) => {
     const campground = await Campground.findById(req.params.id).populate('reviews');
     // We used .populate method so that review of that particular campground(because of id) can be shown
+    if (!campground) {
+        req.flash('error', 'Oops :( Cannot find that campground!')
+        return res.redirect('/campgrounds')
+    }
     res.render('campgrounds/show', { campground })
 }))
 
 // Update and edit
 router.get('/:id/edit', CatchAsync(async(req, res) => {
     const campground = await Campground.findById(req.params.id);
+    if (!campground) {
+        req.flash('error', 'Oops :( Cannot find that campground!')
+        return res.redirect('/campgrounds')
+    }
     res.render('campgrounds/edit', { campground })
 }))
 
 router.put('/:id', validateCampground, CatchAsync(async(req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, req.body.campground);
+    req.flash('success', 'Successfully updated campground!')
     res.redirect(`/campgrounds/${campground._id}`)
 }))
 
@@ -57,6 +67,7 @@ router.put('/:id', validateCampground, CatchAsync(async(req, res) => {
 router.delete('/:id', CatchAsync(async(req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id)
+    req.flash('success', 'Successfully deleted a campground!')
     res.redirect('/campgrounds');
 }))
 
