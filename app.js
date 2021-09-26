@@ -15,7 +15,7 @@ const CatchAsync = require('./utils/CatchAsync')
 
 const methodOverride = require('method-override');
 
-
+const userRoutes = require('./routes/users')
 const campgroundRoutes = require('./routes/campgrounds')
 const reviewRoutes = require('./routes/reviews')
 
@@ -69,13 +69,14 @@ app.use((req, res, next) => {
     next();
 })
 
-// creating fake route toregister user
+// creating fake route to register user
 app.get('/fakeUser', async(req, res) => {
     const user = new User({ email: 'atharv@gmail.com', username: 'atharrrvvv' });
     const newUser = await User.register(user, 'qwerty');
     res.send(newUser);
 })
 
+app.use('/', userRoutes)
 app.use('/campgrounds', campgroundRoutes)
 app.use('/campgrounds/:id/reviews', reviewRoutes)
 
