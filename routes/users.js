@@ -8,13 +8,18 @@ const User = require('../models/user')
 router.get('/register', (req, res) => {
     res.render('users/register');
 })
-router.post('/register', catchAsync(async(req, res) => {
+router.post('/register', catchAsync(async(req, res, next) => {
     const { email, username, password } = req.body;
     try {
         const user = new User({ email, username });
         const registeredUser = await User.register(user, password);
-        req.flash('success', `Welcome to ratemycamp, ${username}`)
-        res.redirect('/campgrounds');
+        // so whenever the user registers we don't want the user to again login but user should be able to automatically logged in as soon as user registers
+        // Passport exposes a login() function on req (also aliased as logIn()) that can be used to establish a login session.
+        req.login(registeredUser, err => {
+            if (err) { return next(err); }
+            req.flash('success', `Welcome to ratemycamp, ${username}`)
+            return res.redirect('/campgrounds');
+        })
     } catch (e) {
         if (e.message === `E11000 duplicate key error collection: yelp-camp.users index: email_1 dup key: { email: "${email}" }`) {
             req.flash('error', e.message = 'Oops :( the email already registered!')
