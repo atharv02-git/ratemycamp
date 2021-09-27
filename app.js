@@ -63,19 +63,14 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// Flash middleware
 app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 })
 
-// creating fake route to register user
-app.get('/fakeUser', async(req, res) => {
-    const user = new User({ email: 'atharv@gmail.com', username: 'atharrrvvv' });
-    const newUser = await User.register(user, 'qwerty');
-    res.send(newUser);
-})
-
+// Defining Routes
 app.use('/', userRoutes)
 app.use('/campgrounds', campgroundRoutes)
 app.use('/campgrounds/:id/reviews', reviewRoutes)
