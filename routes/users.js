@@ -39,7 +39,10 @@ router.get('/login', (req, res) => {
 router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), (req, res) => {
     const { username } = req.body;
     req.flash('success', `Welcome back, ${username}!`);
-    res.redirect('/campgrounds');
+    const redirectUrl = req.session.returnTo || '/campgrounds';
+    delete req.session.returnTo;
+    // deleteing so that te returned url won't be seen in our terminal
+    res.redirect(redirectUrl);
 })
 
 // User logout
