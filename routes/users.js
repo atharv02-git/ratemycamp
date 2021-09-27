@@ -9,15 +9,20 @@ router.get('/register', (req, res) => {
     res.render('users/register');
 })
 router.post('/register', catchAsync(async(req, res) => {
+    const { email, username, password } = req.body;
     try {
-        const { email, username, password } = req.body;
         const user = new User({ email, username });
         const registeredUser = await User.register(user, password);
         req.flash('success', `Welcome to ratemycamp, ${username}`)
         res.redirect('/campgrounds');
     } catch (e) {
-        req.flash('error', e.message);
-        res.redirect('register')
+        if (e.message === `E11000 duplicate key error collection: yelp-camp.users index: email_1 dup key: { email: "${email}" }`) {
+            req.flash('error', e.message = 'Oops, the email already registered!')
+            res.redirect('register');
+        } else {
+            req.flash('error', e.message);
+            res.redirect('register')
+        }
     }
 }));
 
