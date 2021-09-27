@@ -17,7 +17,7 @@ router.post('/register', catchAsync(async(req, res) => {
         res.redirect('/campgrounds');
     } catch (e) {
         if (e.message === `E11000 duplicate key error collection: yelp-camp.users index: email_1 dup key: { email: "${email}" }`) {
-            req.flash('error', e.message = 'Oops, the email already registered!')
+            req.flash('error', e.message = 'Oops :( the email already registered!')
             res.redirect('register');
         } else {
             req.flash('error', e.message);
