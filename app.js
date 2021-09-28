@@ -65,7 +65,7 @@ passport.deserializeUser(User.deserializeUser());
 
 // Flash middleware
 app.use((req, res, next) => {
-    console.log(req.session);
+    // console.log(req.session);
     // checking for the current status of user whether user is already logged in or not
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');

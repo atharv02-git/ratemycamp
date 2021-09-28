@@ -32,6 +32,8 @@ router.get('/new', isLoggedIn, (req, res) => {
 router.post('/', isLoggedIn, validateCampground, CatchAsync(async(req, res, next) => {
     // if (!req.body.campground) throw new ExpressError('Invalid campground data', 400);
     const campground = new Campground(req.body.campground)
+    campground.author = req.user._id;
+    // here is some new user logs in it will detect its id so that they can upload the campground and author's name will pop up on the show page
     await campground.save();
     req.flash('success', 'Successfully created a new campground!')
     res.redirect(`/campgrounds/${campground._id}`)
@@ -39,7 +41,8 @@ router.post('/', isLoggedIn, validateCampground, CatchAsync(async(req, res, next
 
 // To show all campgrounds
 router.get('/:id', CatchAsync(async(req, res) => {
-    const campground = await Campground.findById(req.params.id).populate('reviews');
+    const campground = await Campground.findById(req.params.id).populate('reviews').populate('author');
+    console.log(campground);
     // We used .populate method so that review of that particular campground(because of id) can be shown
     if (!campground) {
         req.flash('error', 'Oops :( Cannot find that campground!')
