@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-// whenever we try to submit review an error will occur "Cannot read property 'reviews' null" which basically means campground is null i.e it is not able to find any campground with id(req.params.id) as id is empty it is because express likes to keep params separate so we are setting mergeParams to be true
+// whenever we try to submit review an error will occur "Cannot read property 'reviews' null" which basically means campground is null i.e it is not able to find any campground with id(req.params.id) as id is empty it is because express likes to keep params separate so we are setting mergeParams to be true.
 const { reviewSchema } = require('../ErrorSchemas')
 
 const ExpressError = require('../utils/ExpressError')
