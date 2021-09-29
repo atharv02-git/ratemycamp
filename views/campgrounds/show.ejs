@@ -33,37 +33,39 @@
             </div>
         </div>
         <div class="col-6">
-            <h2 class='text-decoration-underline'>Leave a review</h2>
-            <form action='/campgrounds/<%=campground._id%>/reviews' method='POST' class='validated-form' novalidate>
-                <div class="mb-3">
-                    <label for="rating" class="form-label">Review</label>
-                    <input type="range" min='1' max='5' class="form-range" name="review[rating]" id="rating">
-                </div>
-                <div class="mb-3">
-                    <label for="body" class="form-label">Review</label>
-                    <textarea class='form-control' name='review[body]' id='body' cols='30' rows='3' required></textarea>
-                    <div class="valid-feedback">
-                        Looks good!
+            <% if(currentUser){ %>
+                <h2 class='text-decoration-underline'>Leave a review</h2>
+                <form action='/campgrounds/<%=campground._id%>/reviews' method='POST' class='validated-form' novalidate>
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Review</label>
+                        <input type="range" min='1' max='5' class="form-range" name="review[rating]" id="rating">
                     </div>
-                </div>
-                <button class="btn btn-success mb-3">Submit</button>
-            </form>
-            <% for(let review of campground.reviews){%>
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            User Rating :
-                            <%= review.rating %>
-                        </h5>
-                        <p class="card-text">
-                            User Review :
-                            <%= review.body %>
-                        </p>
+                    <div class="mb-3">
+                        <label for="body" class="form-label">Review</label>
+                        <textarea class='form-control' name='review[body]' id='body' cols='30' rows='3' required></textarea>
+                        <div class="valid-feedback">
+                            Looks good!
+                        </div>
                     </div>
-                    <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
-                        <button class="btn btn-sm ms-3 mb-3 btn-danger">Delete</button>
-                    </form>
-                </div>
+                    <button class="btn btn-success mb-3">Submit</button>
+                </form>
                 <% } %>
+                    <% for(let review of campground.reviews){%>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    User Rating :
+                                    <%= review.rating %>
+                                </h5>
+                                <p class="card-text">
+                                    User Review :
+                                    <%= review.body %>
+                                </p>
+                            </div>
+                            <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
+                                <button class="btn btn-sm ms-3 mb-3 btn-danger">Delete</button>
+                            </form>
+                        </div>
+                        <% } %>
         </div>
     </div>

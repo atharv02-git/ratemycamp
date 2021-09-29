@@ -21,7 +21,7 @@ router.post('/', isLoggedIn, validateCampground, CatchAsync(async(req, res, next
     // if (!req.body.campground) throw new ExpressError('Invalid campground data', 400);
     const campground = new Campground(req.body.campground)
     campground.author = req.user._id;
-    // here is some new user logs in it will detect its id so that they can upload the campground and author's name will pop up on the show page
+    // here if some new user logs in it will detect its id so that they can upload the campground and author's name will pop up on the show page
     await campground.save();
     req.flash('success', 'Successfully created a new campground!')
     res.redirect(`/campgrounds/${campground._id}`)
