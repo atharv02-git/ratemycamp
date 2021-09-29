@@ -29,7 +29,12 @@ router.post('/', isLoggedIn, validateCampground, CatchAsync(async(req, res, next
 
 // To show all campgrounds
 router.get('/:id', CatchAsync(async(req, res) => {
-    const campground = await Campground.findById(req.params.id).populate('reviews').populate('author');
+    const campground = await Campground.findById(req.params.id).populate({
+        path: 'reviews',
+        populate: {
+            path: 'author'
+        }
+    }).populate('author');
     console.log(campground);
     // We used .populate method so that review of that particular campground(because of id) can be shown
     if (!campground) {
