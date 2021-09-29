@@ -1,24 +1,12 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 // whenever we try to submit review an error will occur "Cannot read property 'reviews' null" which basically means campground is null i.e it is not able to find any campground with id(req.params.id) as id is empty it is because express likes to keep params separate so we are setting mergeParams to be true.
-const { reviewSchema } = require('../ErrorSchemas')
-
 const ExpressError = require('../utils/ExpressError')
 const CatchAsync = require('../utils/CatchAsync')
-
 const Campground = require('../models/campground')
 const Review = require('../models/review')
+const { validateReview } = require('../middleware')
 
-// review validation middlewares
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body)
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
 
 // Review Routes
 router.post('/', validateReview, CatchAsync(async(req, res) => {
