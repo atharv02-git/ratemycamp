@@ -66,7 +66,7 @@
                                     <%= review.body %>
                                 </p>
                             </div>
-                            <% if(currentUser && review.author.equals(currentUser)){ %>
+                            <% if(currentUser && review.author.equals(currentUser._id)){ %>
                                 <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
                                     <button class="btn btn-sm ms-3 mb-3 btn-danger">Delete</button>
                                 </form>

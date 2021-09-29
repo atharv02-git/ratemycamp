@@ -5,9 +5,10 @@ const Review = require('./models/review')
 
 // isLoggedin Middleware
 module.exports.isLoggedIn = (req, res, next) => {
+    const { id } = req.params;
     if (!req.isAuthenticated()) {
         // storing the url they are requesting
-        req.session.returnTo = req.originalUrl
+        req.session.returnTo = (req.query._method === 'DELETE' ? `/campgrounds/${id}` : req.originalUrl);
         req.flash('error', 'You must be logged in first')
         res.redirect('/login')
     }
@@ -32,6 +33,17 @@ module.exports.isAuthor = async(req, res, next) => {
     if (!campground.author.equals(req.user._id)) {
         req.flash('error', "You do not have permission to do that!")
         return res.redirect(`/campgrounds/${id}`)
+    }
+    next();
+}
+
+// isReviewAuthor middleware
+module.exports.isReviewAuthor = async(req, res, next) => {
+    const { id, reviewID } = req.params;
+    const review = await Review.findById(reviewID);
+    if (!review.author.equals(req.user._id)) {
+        req.flash('error', 'You do not have permission to do that!');
+        return res.redirect(`/campgrounds/${id}`);
     }
     next();
 }
