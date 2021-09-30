@@ -3,7 +3,6 @@ const ExpressError = require('./utils/ExpressError');
 const Campground = require('./models/campground');
 const Review = require('./models/review')
 
-// campgrounds/6153237d258f826fd93cab2d/reviews
 // isLoggedin Middleware
 module.exports.isLoggedIn = (req, res, next) => {
     const { id } = req.params;
