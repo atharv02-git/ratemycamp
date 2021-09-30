@@ -24,11 +24,6 @@ router.get('/:id/edit', isLoggedIn, isAuthor, CatchAsync(campgrounds.renderEditF
 router.put('/:id', isLoggedIn, validateCampground, isAuthor, CatchAsync(campgrounds.updateCampground))
 
 // Delete
-router.delete('/:id', isLoggedIn, isAuthor, CatchAsync(async(req, res) => {
-    const { id } = req.params;
-    await Campground.findByIdAndDelete(id);
-    req.flash('success', 'Successfully deleted a campground!')
-    res.redirect('/campgrounds');
-}))
+router.delete('/:id', isLoggedIn, isAuthor, CatchAsync(campgrounds.deleteCampground))
 
 module.exports = router;
