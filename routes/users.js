@@ -6,14 +6,15 @@ const User = require('../models/user')
 const usersControllers = require('../controllers/usersControllers')
 
 // User Register get & post route:
-router.get('/register', usersControllers.renderRegister)
+router.route('/register')
+    .get(usersControllers.renderRegister)
+    .post(catchAsync(usersControllers.register))
 
-router.post('/register', catchAsync(usersControllers.register));
 
 // User Login get and post route:
-router.get('/login', usersControllers.renderLogin)
-
-router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), usersControllers.login)
+router.route('/login')
+    .get(usersControllers.renderLogin)
+    .post(passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), usersControllers.login)
 
 // User logout
 router.get('/logout', usersControllers.logout)
