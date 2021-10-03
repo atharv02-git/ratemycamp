@@ -10,7 +10,7 @@ module.exports.isLoggedIn = (req, res, next) => {
         // storing the url they are requesting
         req.session.returnTo = (req.query._method === 'DELETE' ? `/campgrounds/${id}` : req.originalUrl);
         req.flash('error', 'You must be logged in first')
-        res.redirect('/login')
+        return res.redirect('/login')
     }
     next();
 }
