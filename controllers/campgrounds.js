@@ -12,9 +12,11 @@ module.exports.renderNewForm = (req, res) => {
 module.exports.createCampground = async(req, res, next) => {
     // if (!req.body.campground) throw new ExpressError('Invalid campground data', 400);
     const campground = new Campground(req.body.campground)
+    campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     campground.author = req.user._id;
     // here if some new user logs in it will detect its id so that they can upload the campground and author's name will pop up on the show page
     await campground.save();
+    console.log(campground)
     req.flash('success', 'Successfully created a new campground!')
     res.redirect(`/campgrounds/${campground._id}`)
 }
