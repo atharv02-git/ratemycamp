@@ -11,8 +11,10 @@ cloudinary.config({
 // making the new instance of cloudinary storage and passing cloudinary through multer instead of storing images to our local pc
 const storage = new CloudinaryStorage({
     cloudinary,
-    folder: 'RateMyCamp',
-    allowedformats: ['jpeg', 'jpg', 'png']
+    params: {
+        folder: 'RateMyCamp',
+        allowedformats: ['jpeg', 'jpg', 'png']
+    }
 });
 
 module.exports = {
