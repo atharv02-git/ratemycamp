@@ -4,10 +4,12 @@ if (process.env.NODE_ENV !== "production") {
 
 const express = require('express');
 const router = express.Router();
-const CatchAsync = require('../utils/CatchAsync')
-const campgrounds = require('../controllers/campgrounds')
-const multer = require('multer')
-const upload = multer({ dest: 'uploads/' })
+const CatchAsync = require('../utils/CatchAsync');
+const campgrounds = require('../controllers/campgrounds');
+
+const multer = require('multer');
+const { storage } = require('../cloudinary');
+const upload = multer({ storage });
 
 const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
 
