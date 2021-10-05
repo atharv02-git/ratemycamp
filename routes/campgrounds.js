@@ -26,7 +26,7 @@ router.get('/new', isLoggedIn, campgrounds.renderNewForm)
 // To show all campgrounds
 router.route('/:id')
     .get(CatchAsync(campgrounds.showCampground))
-    .put(isLoggedIn, validateCampground, isAuthor, CatchAsync(campgrounds.updateCampground))
+    .put(isLoggedIn, isAuthor, upload.array('image'), validateCampground, CatchAsync(campgrounds.updateCampground))
     .delete(isLoggedIn, isAuthor, CatchAsync(campgrounds.deleteCampground))
 
 // Update and edit
