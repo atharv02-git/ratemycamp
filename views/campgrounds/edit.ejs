@@ -40,6 +40,7 @@
                     <input class="form-control" name="image" type="file" id="formFile" multiple>
                 </div>
                 <div class="mb-3">
+                    Select any if you want to delete or not:
                     <% campground.images.forEach(function(img,i) {%>
                         <img src="<%= img.url %>" class="img-thumbnail" alt="">
                         <div class="form-check-inline">
