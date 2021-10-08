@@ -30,16 +30,16 @@ const seedDB = async() => {
             description: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eum aperiam magnam repellat, labore id voluptas quidem quam rerum voluptate aliquid nemo vero neque, modi accusamus! Non sed officia error sit?',
             price,
             images: [{
-                    url: 'https://res.cloudinary.com/dig5tdmg2/image/upload/v1633438702/RateMyCamp/dpme3stxglbs8spuyuvo.jpg',
-                    filename: 'RateMyCamp/dpme3stxglbs8spuyuvo'
+                    url: 'https://res.cloudinary.com/dig5tdmg2/image/upload/v1633683550/RateMyCamp/tzvqsfxqw6k4tshshzwt.jpg',
+                    filename: 'RateMyCamp/tzvqsfxqw6k4tshshzwt'
                 },
                 {
-                    url: 'https://res.cloudinary.com/dig5tdmg2/image/upload/v1633438704/RateMyCamp/g1ykuaanxmdpooimdix8.jpg',
-                    filename: 'RateMyCamp/g1ykuaanxmdpooimdix8'
+                    url: 'https://res.cloudinary.com/dig5tdmg2/image/upload/v1633683552/RateMyCamp/hwytgpby6miu09jrutdb.jpg',
+                    filename: 'RateMyCamp/hwytgpby6miu09jrutdb'
                 },
                 {
-                    url: 'https://res.cloudinary.com/dig5tdmg2/image/upload/v1633438706/RateMyCamp/xkjsmjt88zuzl6yjuxwr.jpg',
-                    filename: 'RateMyCamp/xkjsmjt88zuzl6yjuxwr'
+                    url: 'https://res.cloudinary.com/dig5tdmg2/image/upload/v1633684452/RateMyCamp/yfobuijuklsln7rrg0j8.jpg',
+                    filename: 'RateMyCamp/yfobuijuklsln7rrg0j8'
                 }
             ]
         })
