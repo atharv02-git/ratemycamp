@@ -44,7 +44,8 @@ const CampgroundSchema = new Schema({
 }, opts);
 
 CampgroundSchema.virtual('properties.popUpMarkup').get(function() {
-    return "I am poup Text!!!"
+    return `<strong><a href="/campgrounds/${this._id}">${this.title}</a></strong>
+    <p>${this.description.substring(0,20)}...</p>`
 })
 
 //so we the below code is for, if we decide to delete any campground but reviews assosciated to that particular campground does not get deleted...
