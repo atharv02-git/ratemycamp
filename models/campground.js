@@ -11,6 +11,10 @@ ImageSchema.virtual('thumbnail').get(function() {
     return this.url.replace('/upload', '/upload/w_200');
 });
 
+// By default, Mongoose does not include virtuals when you convert a document to JSON. For example, if you pass a document to Express' res.json() function, virtuals will not be included by default.
+
+const opts = { toJSON: { virtuals: true } };
+
 const CampgroundSchema = new Schema({
     title: String,
     images: [ImageSchema],
@@ -37,8 +41,11 @@ const CampgroundSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Review'
     }]
-})
+}, opts);
 
+CampgroundSchema.virtual('properties.popUpMarkup').get(function() {
+    return "I am poup Text!!!"
+})
 
 //so we the below code is for, if we decide to delete any campground but reviews assosciated to that particular campground does not get deleted...
 
