@@ -1,9 +1,13 @@
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
+}
+
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const Joi = require('joi');
-const { campgroundSchema, reviewSchema } = require('./ErrorSchemas');
+
 const session = require('express-session');
 const flash = require('connect-flash');
 const passport = require('passport');
@@ -11,7 +15,6 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 
 const ExpressError = require('./utils/ExpressError')
-const CatchAsync = require('./utils/CatchAsync')
 
 const methodOverride = require('method-override');
 
@@ -50,11 +53,13 @@ app.use(
 );
 
 const sessionConfig = {
+    name: 'session',
     secret: 'thisshouldbeabettersecret!',
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
+        // secure: true
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
