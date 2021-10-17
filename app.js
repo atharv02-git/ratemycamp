@@ -19,6 +19,8 @@ const userRoutes = require('./routes/users')
 const campgroundRoutes = require('./routes/campgrounds')
 const reviewRoutes = require('./routes/reviews')
 
+const mongoSanitize = require('express-mongo-sanitize');
+
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
     // useCreateIndex: true,
@@ -40,6 +42,12 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
+
+app.use(
+    mongoSanitize({
+        replaceWith: '_',
+    }),
+);
 
 const sessionConfig = {
     secret: 'thisshouldbeabettersecret!',
@@ -65,7 +73,7 @@ passport.deserializeUser(User.deserializeUser());
 
 // Flash middleware
 app.use((req, res, next) => {
-    console.log(req.session);
+    console.log(req.query);
     // checking for the current status of user whether user is already logged in or not
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
