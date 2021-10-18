@@ -26,6 +26,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 
 const helmet = require("helmet");
 
+const dbUrl = process.env.DB_url;
+
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
     // useCreateIndex: true,
