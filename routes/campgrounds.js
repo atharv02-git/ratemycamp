@@ -9,7 +9,26 @@ const campgrounds = require('../controllers/campgrounds');
 
 const multer = require('multer');
 const { storage } = require('../cloudinary');
-const upload = multer({ storage });
+const upload = multer({
+    storage,
+    limits: { fileSize: 500000 }
+    //filesize in bytes, in this case it's 500 kb 
+});
+
+const uploadFile = (req, res, next) => {
+    const uploadProcess = upload.single('picture');
+
+    uploadProcess(req, res, err => {
+        if (err instanceof multer.MulterError) {
+            return next(new Error(err, 500));
+        } else if (err) {
+            return next(new Error(err, 500));
+        }
+        next();
+    });
+};
+
+
 
 const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
 
@@ -32,5 +51,5 @@ router.route('/:id')
 // Update and edit
 router.get('/:id/edit', isLoggedIn, isAuthor, CatchAsync(campgrounds.renderEditForm))
 
-
+module.exports = uploadFile;
 module.exports = router;
