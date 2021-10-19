@@ -11,8 +11,8 @@ const multer = require('multer');
 const { storage } = require('../cloudinary');
 const upload = multer({
     storage,
-    limits: { fileSize: 500000 }
-    //filesize in bytes, in this case it's 500 kb 
+    limits: { fileSize: 2000000 }
+    //filesize in bytes, in this case it's 2mb or 2000kb 
 });
 
 const uploadFile = (req, res, next) => {
