@@ -8,7 +8,7 @@ const map = new mapboxgl.Map({
 
 map.addControl(new mapboxgl.NavigationControl());
 
-new mapboxgl.Marker({ rotation: 45 })
+new mapboxgl.Marker()
     .setLngLat(campground.geometry.coordinates)
     .setPopup(
         new mapboxgl.Popup({ offset: 25 })
