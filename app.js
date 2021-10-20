@@ -23,7 +23,11 @@ const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require("helmet");
 
 // setting Mongo Atlas
+<<<<<<< HEAD
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+=======
+const dbUrl = process.env.DB_URl || 'mongodb://localhost:27017/yelp-camp';
+>>>>>>> deployment
 const MongoStore = require('connect-mongo');
 
 mongoose.connect(dbUrl, {
@@ -59,15 +63,25 @@ app.use(
         contentSecurityPolicy: false,
     })
 );
+<<<<<<< HEAD
 
 const secret = process.env.SECRET || 'thisshouldbeabettersecret!'
+=======
+// setting up Atlas session
+
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
+
+>>>>>>> deployment
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     secret,
     touchAfter: 24 * 60 * 60,
+<<<<<<< HEAD
     // crypto: {
     //     secret: 'thisshouldbeabettersecret!',
     // }
+=======
+>>>>>>> deployment
 });
 
 store.on("error", function(e) {
