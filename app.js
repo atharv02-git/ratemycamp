@@ -22,7 +22,8 @@ const reviewRoutes = require('./routes/reviews')
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require("helmet");
 
-const dbUrl = 'mongodb://localhost:27017/yelp-camp';
+// setting Mongo Atlas
+const dbUrl = process.env.DB_URl || 'mongodb://localhost:27017/yelp-camp';
 const MongoStore = require('connect-mongo');
 
 mongoose.connect(dbUrl, {
@@ -58,14 +59,14 @@ app.use(
         contentSecurityPolicy: false,
     })
 );
+// setting up Atlas session
+
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
 
 const store = MongoStore.create({
     mongoUrl: dbUrl,
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     touchAfter: 24 * 60 * 60,
-    // crypto: {
-    //     secret: 'thisshouldbeabettersecret!',
-    // }
 });
 
 store.on("error", function(e) {
@@ -74,7 +75,7 @@ store.on("error", function(e) {
 const sessionConfig = {
     store,
     name: 'session',
-    secret: 'thisshouldbeabettersecret!',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
