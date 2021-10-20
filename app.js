@@ -23,13 +23,11 @@ const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require("helmet");
 
 // setting Mongo Atlas
-<<<<<<< HEAD
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
-=======
-const dbUrl = process.env.DB_URl || 'mongodb://localhost:27017/yelp-camp';
->>>>>>> deployment
 const MongoStore = require('connect-mongo');
 
+const dbUrl = process.env.DB_URL;
+
+// || 'mongodb://localhost:27017/yelp-camp';
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     // useCreateIndex: true,
@@ -63,25 +61,15 @@ app.use(
         contentSecurityPolicy: false,
     })
 );
-<<<<<<< HEAD
 
-const secret = process.env.SECRET || 'thisshouldbeabettersecret!'
-=======
-// setting up Atlas session
-
-const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
-
->>>>>>> deployment
+const secret = process.env.DB_SECRET || 'thisshouldbeabettersecret!'
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     secret,
     touchAfter: 24 * 60 * 60,
-<<<<<<< HEAD
     // crypto: {
     //     secret: 'thisshouldbeabettersecret!',
     // }
-=======
->>>>>>> deployment
 });
 
 store.on("error", function(e) {
@@ -144,6 +132,7 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render('error', { err });
 })
 
-app.listen(3000, () => {
-    console.log('Listening on port 3000')
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Serving on port ${port}`)
 })
