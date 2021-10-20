@@ -1,17 +1,32 @@
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
+}
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const Joi = require('joi')
-const { campgroundSchema, reviewSchema } = require('./ErrorSchemas')
-const ExpressError = require('./utils/ExpressError')
-const CatchAsync = require('./utils/CatchAsync')
-const Campground = require('./models/campground')
-const Review = require('./models/review')
-const methodOverride = require('method-override');
-const review = require('./models/review');
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp', {
+const session = require('express-session');
+const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
+
+const ExpressError = require('./utils/ExpressError')
+const methodOverride = require('method-override');
+
+const userRoutes = require('./routes/users')
+const campgroundRoutes = require('./routes/campgrounds')
+const reviewRoutes = require('./routes/reviews')
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require("helmet");
+
+// setting Mongo Atlas
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+const MongoStore = require('connect-mongo');
+
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     // useCreateIndex: true,
     useUnifiedTopology: true
@@ -28,97 +43,79 @@ const app = express();
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
+
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
+app.use(express.static(path.join(__dirname, 'public')))
 
-const validateCampground = (req, res, next) => {
-    const { error } = campgroundSchema.validate(req.body)
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
+app.use(
+    mongoSanitize({
+        replaceWith: '_',
+    }),
+);
+
+app.use(
+    helmet({
+        contentSecurityPolicy: false,
+    })
+);
+
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!'
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    secret,
+    touchAfter: 24 * 60 * 60,
+    // crypto: {
+    //     secret: 'thisshouldbeabettersecret!',
+    // }
+});
+
+store.on("error", function(e) {
+    console.log("SESSION STORE ERROR", e)
+})
+const sessionConfig = {
+    store,
+    name: 'session',
+    secret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        // secure: true
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }
+app.use(session(sessionConfig))
+app.use(flash());
 
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body)
-    if (error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+// middleware for passport
+app.use(passport.initialize());
+app.use(passport.session());
+// use static authenticate method of model in LocalStrategy
+passport.use(new LocalStrategy(User.authenticate()));
+// use static serialize and deserialize of model for passport session support
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// Flash middleware
+app.use((req, res, next) => {
+    // console.log(req.session);
+    // checking for the current status of user whether user is already logged in or not
+    res.locals.currentUser = req.user;
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
+})
+
+// Defining Routes
+app.use('/', userRoutes)
+app.use('/campgrounds', campgroundRoutes)
+app.use('/campgrounds/:id/reviews', reviewRoutes)
 
 app.get('/', (req, res) => {
     res.render('home')
 })
-
-app.get('/campgrounds', CatchAsync(async(req, res) => {
-    const campgrounds = await Campground.find({});
-    res.render('campgrounds/index', { campgrounds })
-}))
-
-// Creating New Campground
-app.get('/campgrounds/new', (req, res) => {
-    res.render('campgrounds/new')
-})
-
-app.post('/campgrounds', validateCampground, CatchAsync(async(req, res, next) => {
-    // if (!req.body.campground) throw new ExpressError('Invalid campground data', 400);
-    const campground = new Campground(req.body.campground)
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`)
-}))
-
-// To show all campgrounds
-app.get('/campgrounds/:id', CatchAsync(async(req, res) => {
-    const campground = await Campground.findById(req.params.id).populate('reviews');
-    // We used .populate method so that review of that particular campground(because of id) can be shown
-    res.render('campgrounds/show', { campground })
-}))
-
-// Update and edit
-app.get('/campgrounds/:id/edit', CatchAsync(async(req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render('campgrounds/edit', { campground })
-}))
-
-app.put('/campgrounds/:id', validateCampground, CatchAsync(async(req, res) => {
-    const { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, req.body.campground);
-    res.redirect(`/campgrounds/${campground._id}`)
-}))
-
-// Delete
-app.delete('/campgrounds/:id', CatchAsync(async(req, res) => {
-    const { id } = req.params;
-    await Campground.findByIdAndDelete(id)
-    res.redirect('/campgrounds');
-}))
-
-// Review Routes
-app.post('/campgrounds/:id/reviews', validateReview, CatchAsync(async(req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    // To instantiate new Review model we need to import the module
-    const review = new Review(req.body.review);
-    // Here req.body.review is what we gave in show.ejs>form>review[rating] and review[body]
-    // Now push the new review into campground.reviews array
-    campground.reviews.push(review);
-    campground.save();
-    review.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-}))
-
-// delete reviews
-app.delete('/campgrounds/:id/reviews/:reviewID', CatchAsync(async(req, res) => {
-    const { id, reviewID } = req.params;
-    // so the problem is our reviewID is assosciated to campgroundId so if we delete using reviewID the whole campground gets deleted.       [13213,123123,141324] suupose this is an array of object ID's adn we wamt to delete the specific ID that belogs to our review id so we will use an poerator in mongo called $pull operator
-    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewID } });
-    await Review.findByIdAndDelete(reviewID);
-    res.redirect(`/campgrounds/${id}`);
-}))
 
 // handling errors
 
