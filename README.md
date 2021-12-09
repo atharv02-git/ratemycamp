@@ -1,2 +1,2 @@
 # Rate My Camp
-$ npm install <!-- // To install all dependancies -->
+To install all dependancies : $ npm install 
